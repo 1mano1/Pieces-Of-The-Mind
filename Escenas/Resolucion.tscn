@@ -1,0 +1,100 @@
+[gd_scene format=3 uid="uid://dpnlr603td2dt"]
+
+[ext_resource type="Script" uid="uid://b1hxn8786r6aq" path="res://Scripts/resolucion.gd" id="1_8cop2"]
+[ext_resource type="FontFile" uid="uid://u0pxcf807rta" path="res://fonts/Shadow of the Deads.ttf" id="1_8qfuh"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8s0be"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mqik0"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8qfuh"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gyojc"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ww585"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1d3ce"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+
+[node name="Control" type="Control" unique_id=1268301680]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_8cop2")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1195827105]
+
+[node name="Control" type="Control" parent="CanvasLayer" unique_id=1822288378]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="Panel" parent="CanvasLayer/Control" unique_id=1977872824]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Titulo" type="Label" parent="CanvasLayer/Control/Panel" unique_id=808771046]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -297.5
+offset_right = 297.5
+offset_bottom = 124.0
+grow_horizontal = 2
+theme_override_fonts/font = ExtResource("1_8qfuh")
+theme_override_font_sizes/font_size = 60
+text = "RESOLUCION"
+
+[node name="CenterContainer" type="CenterContainer" parent="CanvasLayer/Control" unique_id=373199839]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/Control/CenterContainer" unique_id=1811627882]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="ResolutionOptions" type="OptionButton" parent="CanvasLayer/Control/CenterContainer/VBoxContainer" unique_id=581404885]
+layout_mode = 2
+
+[node name="ApplyButton" type="Button" parent="CanvasLayer/Control/CenterContainer/VBoxContainer" unique_id=1381605883]
+layout_mode = 2
+theme_override_colors/font_hover_color = Color(0.9490196, 0.10980392, 0, 0.9843137)
+theme_override_fonts/font = ExtResource("1_8qfuh")
+theme_override_font_sizes/font_size = 40
+theme_override_styles/normal = SubResource("StyleBoxFlat_8s0be")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_mqik0")
+theme_override_styles/hover = SubResource("StyleBoxFlat_8qfuh")
+text = "APLICAR"
+
+[node name="BackButton" type="Button" parent="CanvasLayer/Control/CenterContainer/VBoxContainer" unique_id=76531134]
+layout_mode = 2
+theme_override_colors/font_hover_color = Color(0.9490196, 0.10980392, 0, 0.9843137)
+theme_override_fonts/font = ExtResource("1_8qfuh")
+theme_override_font_sizes/font_size = 40
+theme_override_styles/normal = SubResource("StyleBoxFlat_gyojc")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_ww585")
+theme_override_styles/hover = SubResource("StyleBoxFlat_1d3ce")
+text = "REGRESAR"
+
+[connection signal="pressed" from="CanvasLayer/Control/CenterContainer/VBoxContainer/ApplyButton" to="." method="_on_apply_button_pressed"]
+[connection signal="pressed" from="CanvasLayer/Control/CenterContainer/VBoxContainer/BackButton" to="." method="_on_back_button_pressed"]

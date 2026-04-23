@@ -1,0 +1,170 @@
+[gd_scene format=3 uid="uid://cohs8jhs1e6b"]
+
+[ext_resource type="Script" uid="uid://q2gc8ir6gxff" path="res://Scripts/menu_3d.gd" id="1_c76rt"]
+[ext_resource type="VideoStream" uid="uid://d1ksu8erplo2y" path="res://videos/video.ogv" id="2_a1trd"]
+[ext_resource type="AudioStream" uid="uid://1ashnbfkyiln" path="res://Audio/backround_music.ogg" id="3_670dp"]
+[ext_resource type="AudioStream" uid="uid://bsu7ljsex8nem" path="res://Audio/gritosfondo.ogg" id="4_b0o1t"]
+[ext_resource type="AudioStream" uid="uid://codh0wuguhm6r" path="res://Audio/lluvia_sonido_fondo.ogg" id="5_d4r14"]
+[ext_resource type="FontFile" uid="uid://u0pxcf807rta" path="res://fonts/Shadow of the Deads.ttf" id="6_uy6a2"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_grwk8"]
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_kcbbu"]
+viewport_path = NodePath("SubViewport")
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_n4rbp"]
+viewport_path = NodePath("SubViewport")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3vmr4"]
+resource_local_to_scene = true
+albedo_texture = SubResource("ViewportTexture_kcbbu")
+emission_enabled = true
+emission_energy_multiplier = 0.01
+emission_texture = SubResource("ViewportTexture_n4rbp")
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fmne2"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_37if3"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cr1ov"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vj08k"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_s0dxv"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+border_color = Color(0.8, 0.8, 0.8, 0)
+shadow_color = Color(0, 0, 0, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_k5w5n"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_287vg"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+border_color = Color(0.8, 0.8, 0.8, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_g233k"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fiwl6"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+
+[node name="Node3D" type="Node3D" unique_id=262695623]
+script = ExtResource("1_c76rt")
+
+[node name="Camera3D" type="Camera3D" parent="." unique_id=713753793]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.33106256, 2.1956463)
+
+[node name="pantalla" type="MeshInstance3D" parent="." unique_id=392252596]
+transform = Transform3D(3.0807035, 0, 0, 0, -4.371139e-08, -1.7370546, 0, 1, -7.5929066e-08, 0, 0.3167125, 0)
+mesh = SubResource("PlaneMesh_grwk8")
+surface_material_override/0 = SubResource("StandardMaterial3D_3vmr4")
+
+[node name="SubViewport" type="SubViewport" parent="." unique_id=1614514429]
+size = Vector2i(596, 336)
+
+[node name="VideoStreamPlayer" type="VideoStreamPlayer" parent="SubViewport" unique_id=1286807414]
+offset_right = 40.0
+offset_bottom = 40.0
+stream = ExtResource("2_a1trd")
+autoplay = true
+loop = true
+
+[node name="musica" type="AudioStreamPlayer2D" parent="." unique_id=708555358]
+stream = ExtResource("3_670dp")
+volume_db = 23.624
+autoplay = true
+
+[node name="gritos" type="AudioStreamPlayer2D" parent="." unique_id=623430482]
+stream = ExtResource("4_b0o1t")
+volume_db = -15.0
+autoplay = true
+
+[node name="lluvia" type="AudioStreamPlayer2D" parent="." unique_id=1175689161]
+stream = ExtResource("5_d4r14")
+volume_db = 3.445
+autoplay = true
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1748008855]
+
+[node name="Control" type="Control" parent="CanvasLayer" unique_id=1746380425]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="titulo" type="VBoxContainer" parent="CanvasLayer/Control" unique_id=1427197978]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 19.0
+offset_bottom = 164.0
+grow_horizontal = 2
+
+[node name="Button" type="Button" parent="CanvasLayer/Control/titulo" unique_id=253649426]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("6_uy6a2")
+theme_override_font_sizes/font_size = 80
+theme_override_styles/normal = SubResource("StyleBoxFlat_fmne2")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_37if3")
+theme_override_styles/hover = SubResource("StyleBoxFlat_cr1ov")
+text = "PIECES OF THE MIND"
+
+[node name="CenterContainer" type="CenterContainer" parent="CanvasLayer/Control" unique_id=1822089931]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/Control/CenterContainer" unique_id=484941598]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="play" type="Button" parent="CanvasLayer/Control/CenterContainer/VBoxContainer" unique_id=1449960992]
+custom_minimum_size = Vector2(300, 70)
+layout_mode = 2
+theme_override_colors/font_hover_color = Color(0.9490196, 0.10980392, 0, 0.9843137)
+theme_override_fonts/font = ExtResource("6_uy6a2")
+theme_override_font_sizes/font_size = 40
+theme_override_styles/normal = SubResource("StyleBoxFlat_vj08k")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_s0dxv")
+theme_override_styles/hover = SubResource("StyleBoxFlat_k5w5n")
+theme_override_styles/focus = SubResource("StyleBoxFlat_287vg")
+text = "JUGAR"
+
+[node name="options" type="Button" parent="CanvasLayer/Control/CenterContainer/VBoxContainer" unique_id=1443022699]
+custom_minimum_size = Vector2(300, 70)
+layout_mode = 2
+theme_override_colors/font_hover_color = Color(0.9490196, 0.10980392, 0, 0.9843137)
+theme_override_fonts/font = ExtResource("6_uy6a2")
+theme_override_font_sizes/font_size = 40
+theme_override_styles/normal = SubResource("StyleBoxFlat_vj08k")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_s0dxv")
+theme_override_styles/hover = SubResource("StyleBoxFlat_g233k")
+theme_override_styles/focus = SubResource("StyleBoxFlat_287vg")
+text = "OPCIONES"
+
+[node name="quit" type="Button" parent="CanvasLayer/Control/CenterContainer/VBoxContainer" unique_id=214593020]
+custom_minimum_size = Vector2(300, 70)
+layout_mode = 2
+theme_override_colors/font_hover_color = Color(0.9490196, 0.10980392, 0, 0.9843137)
+theme_override_fonts/font = ExtResource("6_uy6a2")
+theme_override_font_sizes/font_size = 40
+theme_override_styles/normal = SubResource("StyleBoxFlat_vj08k")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_s0dxv")
+theme_override_styles/hover = SubResource("StyleBoxFlat_fiwl6")
+theme_override_styles/focus = SubResource("StyleBoxFlat_287vg")
+text = "SALIR"
+
+[connection signal="pressed" from="CanvasLayer/Control/CenterContainer/VBoxContainer/play" to="." method="_on_play_pressed"]
+[connection signal="pressed" from="CanvasLayer/Control/CenterContainer/VBoxContainer/options" to="." method="_on_options_pressed"]
+[connection signal="pressed" from="CanvasLayer/Control/CenterContainer/VBoxContainer/quit" to="." method="_on_quit_pressed"]

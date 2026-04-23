@@ -1,0 +1,152 @@
+[gd_scene format=3 uid="uid://vauwc6ulbgn1"]
+
+[ext_resource type="Script" uid="uid://d361lw7dmfbnh" path="res://Scripts/jugador.gd" id="1_83bx5"]
+[ext_resource type="PackedScene" uid="uid://b4pg80px6jj1h" path="res://Interaccion/interact_ray.tscn" id="2_66cid"]
+[ext_resource type="Shader" uid="uid://cfcjxtxw4677j" path="res://Shaders/parpado.gdshader" id="2_parpado"]
+[ext_resource type="Shader" uid="uid://cjin6oxuxapv5" path="res://Shaders/demencia.gdshader" id="3_demencia"]
+[ext_resource type="Texture2D" uid="uid://wt20ktjonkf8" path="res://Texturas/UI/wasd.png" id="4_wasd"]
+[ext_resource type="Texture2D" uid="uid://d7mk4jwk1tda" path="res://Texturas/UI/crosshair.png" id="5_rldw1"]
+[ext_resource type="AudioStream" uid="uid://diw3o4i3242rg" path="res://Audio/agitaci├│n.mp3" id="5_wlual"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_shl25"]
+
+[sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_83bx5"]
+dof_blur_far_transition = 0.1
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_demencia"]
+shader = ExtResource("3_demencia")
+shader_parameter/intensidad = 0.0
+shader_parameter/tiempo = 0.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_parpado"]
+shader = ExtResource("2_parpado")
+shader_parameter/apertura = 0.0
+
+[sub_resource type="Animation" id="Animation_reset"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 0.8656138, 0)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_ut6g8"]
+_data = {
+&"RESET": SubResource("Animation_reset")
+}
+
+[node name="Jugador" type="CharacterBody3D" unique_id=334207117]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8656138, 0)
+script = ExtResource("1_83bx5")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=486609050]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.16293359, 0)
+shape = SubResource("CapsuleShape3D_shl25")
+
+[node name="Head" type="Node3D" parent="." unique_id=1167616426]
+
+[node name="Camera3D" type="Camera3D" parent="Head" unique_id=594942032]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
+attributes = SubResource("CameraAttributesPractical_83bx5")
+
+[node name="InteractRay" parent="Head" unique_id=569721596 instance=ExtResource("2_66cid")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.686857, 0)
+
+[node name="AudioRespiracion" type="AudioStreamPlayer" parent="." unique_id=901000001]
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1923792361]
+layer = 10
+
+[node name="DemenciaRect" type="ColorRect" parent="CanvasLayer" unique_id=1160000001]
+visible = false
+material = SubResource("ShaderMaterial_demencia")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer" unique_id=1260581126]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 1)
+
+[node name="BlurRect" type="ColorRect" parent="CanvasLayer" unique_id=1260581127]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.55, 0.55, 0.55, 0.65)
+
+[node name="ParpadeoShader" type="ColorRect" parent="CanvasLayer" unique_id=1260581128]
+visible = false
+material = SubResource("ShaderMaterial_parpado")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 1)
+
+[node name="DialogoLabel" type="Label" parent="CanvasLayer" unique_id=777000001]
+modulate = Color(1, 1, 1, 0)
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -120.0
+offset_bottom = -30.0
+grow_vertical = 0
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="WASDPanel" type="TextureRect" parent="CanvasLayer" unique_id=888000001]
+modulate = Color(1, 1, 1, 0)
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 30.0
+offset_top = -140.0
+offset_right = 340.0
+offset_bottom = 140.0
+grow_vertical = 2
+texture = ExtResource("4_wasd")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TextureRect" type="TextureRect" parent="CanvasLayer" unique_id=184724039]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -22.5
+offset_top = -44.0
+offset_right = 22.5
+offset_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("5_rldw1")
+expand_mode = 1
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=658035430]
+libraries/ = SubResource("AnimationLibrary_ut6g8")
+
+[node name="AudioIntro" type="AudioStreamPlayer" parent="." unique_id=1666440024]
+stream = ExtResource("5_wlual")

@@ -1,0 +1,160 @@
+[gd_scene format=3 uid="uid://4ys6aj3n446l"]
+
+[ext_resource type="Script" uid="uid://clo5te5uunlg1" path="res://Scripts/opciones_3d.gd" id="1_xam6d"]
+[ext_resource type="FontFile" uid="uid://u0pxcf807rta" path="res://fonts/Shadow of the Deads.ttf" id="2_khu53"]
+[ext_resource type="VideoStream" uid="uid://d1ksu8erplo2y" path="res://videos/video.ogv" id="3_qftp3"]
+[ext_resource type="AudioStream" uid="uid://codh0wuguhm6r" path="res://Audio/lluvia_sonido_fondo.ogg" id="4_no3en"]
+[ext_resource type="AudioStream" uid="uid://tlilf8en67vi" path="res://Audio/gritos2.ogg" id="5_yavkp"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_grwk8"]
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_kcbbu"]
+viewport_path = NodePath("SubViewport")
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_n4rbp"]
+viewport_path = NodePath("SubViewport")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3vmr4"]
+resource_local_to_scene = true
+albedo_texture = SubResource("ViewportTexture_kcbbu")
+emission_enabled = true
+emission_energy_multiplier = 0.01
+emission_texture = SubResource("ViewportTexture_n4rbp")
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vrwcb"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_xp5c8"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_xraef"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_287vg"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+border_color = Color(0.8, 0.8, 0.8, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vj08k"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2682y"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fj5g5"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mmc27"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2q2mn"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_nx51k"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+
+[node name="opciones" type="Node3D" unique_id=262695623]
+script = ExtResource("1_xam6d")
+
+[node name="Label" type="Label" parent="." unique_id=1688546731]
+visible = false
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -443.875
+offset_right = 443.875
+offset_bottom = 124.0
+grow_horizontal = 2
+theme_override_fonts/font = ExtResource("2_khu53")
+theme_override_font_sizes/font_size = 55
+text = "PIECES OF THE MIND"
+
+[node name="pantalla" type="MeshInstance3D" parent="." unique_id=392252596]
+transform = Transform3D(3.0807035, 0, 0, 0, -4.371139e-08, -1.7370546, 0, 1, -7.5929066e-08, 0, 0.3167125, 0)
+mesh = SubResource("PlaneMesh_grwk8")
+surface_material_override/0 = SubResource("StandardMaterial3D_3vmr4")
+
+[node name="Camera3D" type="Camera3D" parent="." unique_id=713753793]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.33106256, 2.1956463)
+
+[node name="SubViewport" type="SubViewport" parent="." unique_id=1614514429]
+size = Vector2i(596, 336)
+
+[node name="VideoStreamPlayer" type="VideoStreamPlayer" parent="SubViewport" unique_id=1286807414]
+offset_right = 40.0
+offset_bottom = 40.0
+stream = ExtResource("3_qftp3")
+autoplay = true
+loop = true
+
+[node name="lluvia" type="AudioStreamPlayer2D" parent="." unique_id=1175689161]
+stream = ExtResource("4_no3en")
+volume_db = 3.445
+autoplay = true
+
+[node name="gritos" type="AudioStreamPlayer2D" parent="." unique_id=1757734490]
+stream = ExtResource("5_yavkp")
+volume_db = -12.0
+autoplay = true
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1130123407]
+
+[node name="Control" type="Control" parent="CanvasLayer" unique_id=1858131596]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="CenterContainer" type="CenterContainer" parent="CanvasLayer/Control" unique_id=254314635]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/Control/CenterContainer" unique_id=484941598]
+layout_mode = 2
+
+[node name="Volumen" type="Button" parent="CanvasLayer/Control/CenterContainer/VBoxContainer" unique_id=1449960992]
+layout_mode = 2
+theme_override_colors/font_hover_color = Color(0.9490196, 0.10980392, 0, 0.9843137)
+theme_override_fonts/font = ExtResource("2_khu53")
+theme_override_font_sizes/font_size = 40
+theme_override_styles/normal = SubResource("StyleBoxFlat_vrwcb")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_xp5c8")
+theme_override_styles/hover = SubResource("StyleBoxFlat_xraef")
+theme_override_styles/focus = SubResource("StyleBoxFlat_287vg")
+text = "VOLUMEN"
+
+[node name="Resolution" type="Button" parent="CanvasLayer/Control/CenterContainer/VBoxContainer" unique_id=1443022699]
+layout_mode = 2
+theme_override_colors/font_hover_color = Color(0.9490196, 0.10980392, 0, 0.9843137)
+theme_override_fonts/font = ExtResource("2_khu53")
+theme_override_font_sizes/font_size = 40
+theme_override_styles/normal = SubResource("StyleBoxFlat_vj08k")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_2682y")
+theme_override_styles/hover = SubResource("StyleBoxFlat_fj5g5")
+theme_override_styles/focus = SubResource("StyleBoxFlat_287vg")
+text = "RESOLUCION"
+
+[node name="Back" type="Button" parent="CanvasLayer/Control/CenterContainer/VBoxContainer" unique_id=214593020]
+layout_mode = 2
+theme_override_colors/font_hover_color = Color(0.9490196, 0.10980392, 0, 0.9843137)
+theme_override_fonts/font = ExtResource("2_khu53")
+theme_override_font_sizes/font_size = 40
+theme_override_styles/normal = SubResource("StyleBoxFlat_mmc27")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_2q2mn")
+theme_override_styles/hover = SubResource("StyleBoxFlat_nx51k")
+theme_override_styles/focus = SubResource("StyleBoxFlat_287vg")
+text = "REGRESAR"
+
+[connection signal="pressed" from="CanvasLayer/Control/CenterContainer/VBoxContainer/Volumen" to="." method="_on_play_pressed"]
+[connection signal="pressed" from="CanvasLayer/Control/CenterContainer/VBoxContainer/Volumen" to="." method="_on_volumen_pressed"]
+[connection signal="pressed" from="CanvasLayer/Control/CenterContainer/VBoxContainer/Resolution" to="." method="_on_resolution_pressed"]
+[connection signal="pressed" from="CanvasLayer/Control/CenterContainer/VBoxContainer/Resolution" to="." method="_on_options_pressed"]
+[connection signal="pressed" from="CanvasLayer/Control/CenterContainer/VBoxContainer/Resolution" to="." method="_on_play_pressed"]
+[connection signal="pressed" from="CanvasLayer/Control/CenterContainer/VBoxContainer/Back" to="." method="_on_quit_pressed"]
+[connection signal="pressed" from="CanvasLayer/Control/CenterContainer/VBoxContainer/Back" to="." method="_on_play_pressed"]
+[connection signal="pressed" from="CanvasLayer/Control/CenterContainer/VBoxContainer/Back" to="." method="_on_back_pressed"]

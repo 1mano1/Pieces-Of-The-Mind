@@ -1,0 +1,29 @@
+[gd_scene format=3 uid="uid://sh4jf2bww71p"]
+
+[ext_resource type="Script" uid="uid://drxcaaew5x6e" path="res://NPCS/interactable_npc.gd" id="1_rvckp"]
+[ext_resource type="Texture2D" uid="uid://pksdkrbtby6q" path="res://images/walfa-3.webp" id="1_wvcki"]
+[ext_resource type="AudioStream" uid="uid://dj1vswwuowjq1" path="res://Sonidos/Boffin's_death_sound_and_Brainiac's_death_sound.mp3" id="3_lw5qt"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_wvcki"]
+radius = 0.55371094
+height = 2.2817383
+
+[node name="Interactable_NPC" type="CharacterBody3D" unique_id=489650827]
+script = ExtResource("1_rvckp")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1792837989]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.13110352, 0)
+shape = SubResource("CapsuleShape3D_wvcki")
+
+[node name="Sprite3D" type="Sprite3D" parent="CollisionShape3D" unique_id=1587571272]
+pixel_size = 0.005
+billboard = 1
+double_sided = false
+texture = ExtResource("1_wvcki")
+metadata/_edit_group_ = true
+
+[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="." unique_id=1345549037]
+stream = ExtResource("3_lw5qt")
+pitch_scale = 1.52
+
+[connection signal="interacted" from="." to="." method="_on_interacted"]

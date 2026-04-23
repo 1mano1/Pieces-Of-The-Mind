@@ -1,0 +1,48 @@
+[gd_scene format=3 uid="uid://bswe0ok704sgv"]
+
+[ext_resource type="Script" uid="uid://cm4au736fi2gd" path="res://Scripts/barra_tareas.gd" id="1_barra"]
+[ext_resource type="Texture2D" uid="uid://c76836y1j1dmk" path="res://Texturas/UI/barra_tareas.png" id="2_img"]
+
+[node name="BarraTarea" type="CanvasLayer" unique_id=85699779]
+layer = 20
+script = ExtResource("1_barra")
+
+[node name="PanelImg" type="TextureRect" parent="." unique_id=954172998]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -320.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = 195.0
+grow_horizontal = 0
+texture = ExtResource("2_img")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TareaLabel" type="Label" parent="." unique_id=127136431]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -298.0
+offset_top = 60.0
+offset_right = -23.0
+offset_bottom = 145.0
+grow_horizontal = 0
+text = "• Dirígete al cuarto de tu hija"
+vertical_alignment = 1
+autowrap_mode = 2
+
+[node name="CheckLabel" type="Label" parent="." unique_id=338737714]
+visible = false
+modulate = Color(0.2, 0.9, 0.2, 0)
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -305.0
+offset_top = 120.0
+offset_right = -30.0
+offset_bottom = 160.0
+grow_horizontal = 0
+text = "✓ Completado"
+vertical_alignment = 1

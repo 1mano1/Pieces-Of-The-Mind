@@ -1,0 +1,24 @@
+[gd_scene format=3 uid="uid://c4qf28ymn1qui"]
+
+[ext_resource type="Script" uid="uid://bnn4w4fdbsf4n" path="res://Interaccion/test_interactable.gd" id="1_arup0"]
+[ext_resource type="Texture2D" uid="uid://d0c1ev1lvlu8x" path="res://icon.svg" id="1_eqidr"]
+[ext_resource type="AudioStream" uid="uid://cnjy5758l7ajl" path="res://Eating_SFX.mp3" id="3_arup0"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_mpyaa"]
+radius = 0.23984317
+
+[node name="TestInteractable" type="StaticBody3D" unique_id=1642697268]
+script = ExtResource("1_arup0")
+prompt_message = "Interactuar con objeto"
+prompt_input = "Interactuar"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1039734519]
+shape = SubResource("SphereShape3D_mpyaa")
+
+[node name="Sprite3D" type="Sprite3D" parent="CollisionShape3D" unique_id=759583473]
+pixel_size = 0.0028
+billboard = 1
+texture = ExtResource("1_eqidr")
+
+[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="." unique_id=374670824]
+stream = ExtResource("3_arup0")

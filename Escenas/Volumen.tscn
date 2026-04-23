@@ -1,0 +1,80 @@
+[gd_scene format=3 uid="uid://b2c33edbkyvqy"]
+
+[ext_resource type="Script" uid="uid://dm46vad674538" path="res://Scripts/volumen.gd" id="1_qt4qt"]
+[ext_resource type="FontFile" uid="uid://u0pxcf807rta" path="res://fonts/Shadow of the Deads.ttf" id="2_n6sey"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fmpi7"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fg6oi"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pg64q"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+
+[node name="Control" type="Control" unique_id=1066815350]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_qt4qt")
+
+[node name="Panel" type="Panel" parent="." unique_id=1167384565]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Titulo" type="Label" parent="Panel" unique_id=36299278]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -40.0
+offset_right = 40.0
+offset_bottom = 23.0
+grow_horizontal = 2
+theme_override_fonts/font = ExtResource("2_n6sey")
+theme_override_font_sizes/font_size = 60
+text = "VOLUMEN"
+
+[node name="VolumeSlider" type="HSlider" parent="Panel" unique_id=246549609]
+layout_mode = 1
+anchors_preset = 14
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = 46.0
+offset_top = -141.0
+offset_right = -38.0
+offset_bottom = -125.0
+grow_horizontal = 2
+grow_vertical = 2
+value = 50.0
+
+[node name="BackButton" type="Button" parent="Panel" unique_id=1839613637]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -44.0
+offset_top = -31.0
+offset_right = 44.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_colors/font_hover_color = Color(0.9490196, 0.10980392, 0, 0.9843137)
+theme_override_fonts/font = ExtResource("2_n6sey")
+theme_override_font_sizes/font_size = 40
+theme_override_styles/normal = SubResource("StyleBoxFlat_fmpi7")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_fg6oi")
+theme_override_styles/hover = SubResource("StyleBoxFlat_pg64q")
+text = "REGRESAR"
+
+[connection signal="value_changed" from="Panel/VolumeSlider" to="." method="_on_volume_slider_value_changed"]
+[connection signal="pressed" from="Panel/BackButton" to="." method="_on_back_button_pressed"]
