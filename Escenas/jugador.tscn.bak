@@ -1,0 +1,148 @@
+[gd_scene format=3 uid="uid://vauwc6ulbgn1"]
+
+[ext_resource type="Script" uid="uid://d361lw7dmfbnh" path="res://Scripts/jugador.gd" id="1_83bx5"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_shl25"]
+
+[sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_83bx5"]
+dof_blur_far_enabled = true
+dof_blur_far_transition = 0.1
+
+[sub_resource type="Animation" id="Animation_pd7u1"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Head/Camera3D:attributes:dof_blur_amount")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.1]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 0.8656138, 0)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath(".:rotation")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 0, 0)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("CanvasLayer/ColorRect:modulate")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_ewkf5"]
+resource_name = "intro"
+length = 3.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Head/Camera3D:attributes:dof_blur_amount")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 3),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [0.1, 0.0]
+}
+
+[sub_resource type="Animation" id="Animation_83bx5"]
+resource_name = "intro_completa"
+length = 0.5
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 3),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(0, 0.8656138, 0), Vector3(0, 0.4469415, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 3),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(0, 0, 0), Vector3(0, 0, 0)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("CanvasLayer/ColorRect:modulate")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0.0009999999, 0.5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0.5019608), Color(1, 1, 1, 0.5019608)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_ut6g8"]
+_data = {
+&"RESET": SubResource("Animation_pd7u1"),
+&"intro": SubResource("Animation_ewkf5"),
+&"intro_completa": SubResource("Animation_83bx5")
+}
+
+[node name="Jugador" type="CharacterBody3D" unique_id=334207117]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8656138, 0)
+script = ExtResource("1_83bx5")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=486609050]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.16293359, 0)
+shape = SubResource("CapsuleShape3D_shl25")
+
+[node name="Head" type="Node3D" parent="." unique_id=1167616426]
+transform = Transform3D(1, 0, 0, 0, 0.715975, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="Camera3D" type="Camera3D" parent="Head" unique_id=594942032]
+transform = Transform3D(1, 0, 0, 0, 1.3966968, 0, 0, 0, 1, 0, 1.3268731, 0)
+attributes = SubResource("CameraAttributesPractical_83bx5")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1923792361]
+
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer" unique_id=1260581126]
+offset_right = 1152.0
+offset_bottom = 651.0
+color = Color(0.12955844, 0.12955847, 0.12955844, 1)
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=658035430]
+libraries/ = SubResource("AnimationLibrary_ut6g8")

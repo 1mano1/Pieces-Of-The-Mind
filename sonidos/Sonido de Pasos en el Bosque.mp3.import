@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://clud8wgyvlw0t"
+path="res://.godot/imported/Sonido de Pasos en el Bosque.mp3-6b85b2f6d19d489cf30d864f025189a2.mp3str"
+
+[deps]
+
+source_file="res://sonidos/Sonido de Pasos en el Bosque.mp3"
+dest_files=["res://.godot/imported/Sonido de Pasos en el Bosque.mp3-6b85b2f6d19d489cf30d864f025189a2.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

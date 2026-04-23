@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://c0w2o52sw40l5"
+path="res://.godot/imported/Sonido de pasos en superficie plana.mp3-0be3f151e906f62aa03493178d2871a9.mp3str"
+
+[deps]
+
+source_file="res://sonidos/Sonido de pasos en superficie plana.mp3"
+dest_files=["res://.godot/imported/Sonido de pasos en superficie plana.mp3-0be3f151e906f62aa03493178d2871a9.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

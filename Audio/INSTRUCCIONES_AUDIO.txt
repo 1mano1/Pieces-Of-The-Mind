@@ -1,0 +1,36 @@
+=== INSTRUCCIONES PARA AGREGAR AUDIO ===
+
+AUDIO DE LA ESCENA INTRO (al despertar):
+-----------------------------------------
+1. Coloca tu archivo de audio en esta carpeta: res://Audio/
+2. En Godot, abre la escena del Jugador (jugador.tscn)
+3. Agrega un nodo hijo de tipo AudioStreamPlayer
+4. Nombra el nodo exactamente: AudioIntro
+5. Asigna tu archivo de audio al campo "Stream" del nodo
+6. Ajusta volumen y opciones segun necesites
+El script lo detecta automaticamente por nombre.
+
+AUDIO DE LA ESCENA DEMENCIA (en el comedor):
+---------------------------------------------
+1. Coloca tu archivo de audio en: res://Audio/
+2. En Godot, abre la escena principal (node_3d.scn)
+3. Agrega un nodo hijo de EscenaDemencia de tipo AudioStreamPlayer
+   (o AudioStreamPlayer3D si quieres audio posicional)
+4. Nombra el nodo como quieras (ej: AudioDemencia)
+5. Asigna tu archivo de audio al campo "Stream"
+6. En el Inspector del nodo EscenaDemencia, busca el campo
+   "Audio Demencia Path" y arrastra ahi el nodo de audio
+El audio iniciara automaticamente al comenzar la escena de demencia.
+
+AUDIO DE RESPIRACION (ya existente):
+--------------------------------------
+El nodo AudioRespiracion dentro del Jugador ya funciona.
+Solo asegurate de que tenga un Stream asignado.
+
+=== RESUMEN DE NODOS A AGREGAR ===
+Jugador (jugador.tscn):
+  └── AudioRespiracion  (ya existe)
+  └── AudioIntro        (NUEVO - agrega tu audio aqui)
+
+EscenaDemencia (en node_3d.scn):
+  └── [cualquier nombre]  (NUEVO - asigna en inspector)
