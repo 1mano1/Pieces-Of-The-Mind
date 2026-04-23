@@ -14,6 +14,13 @@ extends Node3D
 @export_file("*.tscn", "*.glb", "*.gltf") var enemy_model_path: String = ""
 @export var enemy_spawn_offset_from_player: Vector3 = Vector3(12.0, 0.0, 12.0)
 @export_range(-180.0, 180.0, 1.0) var enemy_spawn_rot_y_deg: float = 0.0
+@export var niebla_dinamica_activa: bool = true
+@export_range(0.0, 4000.0, 1.0) var niebla_distancia_inicio: float = 40.0
+@export_range(1.0, 6000.0, 1.0) var niebla_distancia_maxima: float = 320.0
+@export_range(0.0, 1.0, 0.001) var niebla_densidad_cercana: float = 0.004
+@export_range(0.0, 1.0, 0.001) var niebla_densidad_profunda: float = 0.03
+@export var color_niebla_profunda: Color = Color(0.53, 0.56, 0.55, 1.0)
+@export_range(0.05, 1.0, 0.01) var niebla_suavizado: float = 0.18
 
 # Renderizado inteligente estilo chunks (tipo Minecraft):
 # solo deja visibles chunks cercanos al jugador para ahorrar recursos.
@@ -40,6 +47,9 @@ var _hotbar_bosque: Control = null
 var _enemy_controller: CharacterBody3D = null
 var _hotbar_retry_time: float = 0.0
 var _enemy_retry_time: float = 0.0
+var _world_environment: WorldEnvironment = null
+var _niebla_origen_xz: Vector2 = Vector2.ZERO
+var _niebla_densidad_actual: float = 0.0
 
 const CORDURA_FRAMES: int = 11
 
@@ -50,6 +60,7 @@ func _ready():
 	if not jugador.is_in_group("player"):
 		jugador.add_to_group("player")
 	jugador.activar_control()
+	_configurar_niebla_dinamica()
 	call_deferred("_setup_hotbar_bosque")
 	call_deferred("_setup_enemy_spider")
 	call_deferred("_spawn_arboles")
@@ -99,7 +110,7 @@ func _setup_hotbar_bosque() -> void:
 
 	hotbar.name = "HotbarBosqueUI"
 	hotbar.visible = true
-	hotbar.z_index = 90
+	# hotbar.z_index = 90  # Quitamos esto temporalmente por si colisiona con otros CanvasItems en Godot 4
 	canvas.add_child(hotbar)
 	_hotbar_bosque = hotbar
 
@@ -359,8 +370,57 @@ func _forzar_recalculo_chunks() -> void:
 	_chunk_jugador_actual = Vector2i(2147483647, 2147483647)
 	_actualizar_visibilidad_chunks()
 
+func _configurar_niebla_dinamica() -> void:
+	if not niebla_dinamica_activa:
+		return
+
+	_world_environment = get_node_or_null("WorldEnvironment") as WorldEnvironment
+	if _world_environment == null:
+		push_warning("nivel_bosque: No se encontro WorldEnvironment para la niebla dinamica.")
+		return
+
+	if _world_environment.environment == null:
+		_world_environment.environment = Environment.new()
+
+	var env := _world_environment.environment
+	env.fog_enabled = true
+	env.fog_light_color = color_niebla_profunda
+
+	_niebla_origen_xz = Vector2(jugador.global_position.x, jugador.global_position.z)
+	_niebla_densidad_actual = clampf(env.fog_density, 0.0, 1.0)
+
+	_actualizar_niebla_por_profundidad(0.0)
+
+func _actualizar_niebla_por_profundidad(delta: float) -> void:
+	if not niebla_dinamica_activa:
+		return
+	if _world_environment == null or _world_environment.environment == null:
+		return
+	if not is_instance_valid(jugador):
+		return
+
+	var env := _world_environment.environment
+	var pos_xz := Vector2(jugador.global_position.x, jugador.global_position.z)
+	var distancia_desde_entrada := pos_xz.distance_to(_niebla_origen_xz)
+	var distancia_tope := maxf(niebla_distancia_maxima, niebla_distancia_inicio + 1.0)
+	var profundidad := clampf(inverse_lerp(niebla_distancia_inicio, distancia_tope, distancia_desde_entrada), 0.0, 1.0)
+
+	var densidad_min := minf(niebla_densidad_cercana, niebla_densidad_profunda)
+	var densidad_max := maxf(niebla_densidad_cercana, niebla_densidad_profunda)
+	var densidad_objetivo := lerpf(densidad_min, densidad_max, profundidad)
+
+	if delta <= 0.0:
+		_niebla_densidad_actual = densidad_objetivo
+	else:
+		var t_suavizado := clampf(delta * (niebla_suavizado * 60.0), 0.0, 1.0)
+		_niebla_densidad_actual = lerpf(_niebla_densidad_actual, densidad_objetivo, t_suavizado)
+
+	env.fog_density = _niebla_densidad_actual
+	env.fog_light_color = color_niebla_profunda.darkened(0.16 * profundidad)
+
 func _process(delta: float) -> void:
 	_actualizar_cordura()
+	_actualizar_niebla_por_profundidad(delta)
 
 	if _hotbar_bosque == null or not is_instance_valid(_hotbar_bosque):
 		_hotbar_retry_time += delta

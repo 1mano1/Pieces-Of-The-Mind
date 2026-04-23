@@ -17,10 +17,22 @@ var _updating_from_state: bool = false
 
 func _ready() -> void:
 	name = "HotbarBosque"
-	set_anchors_preset(Control.PRESET_FULL_RECT)
+	
+	# Aseguramos que la base del control llene realmente la pantalla 
+	# desde la capa del canvas.
+	anchor_left = 0.0
+	anchor_top = 0.0
+	anchor_right = 1.0
+	anchor_bottom = 1.0
+	offset_left = 0.0
+	offset_top = 0.0
+	offset_right = 0.0
+	offset_bottom = 0.0
+	
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 	GameState._ensure_hotbar_initialized()
+	
 	_build_ui()
 	_connect_state_signals()
 	_refresh_slots()
@@ -32,34 +44,41 @@ func _exit_tree() -> void:
 func _build_ui() -> void:
 	var root_center := CenterContainer.new()
 	root_center.name = "BottomCenter"
+	
+	# Usamos los anclas manuales para un Control hijo
 	root_center.anchor_left = 0.0
-	root_center.anchor_top = 1.0
 	root_center.anchor_right = 1.0
+	root_center.anchor_top = 1.0
 	root_center.anchor_bottom = 1.0
+	
+	root_center.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	root_center.grow_vertical = Control.GROW_DIRECTION_BEGIN
+	
 	root_center.offset_left = 0.0
-	root_center.offset_top = float(-bar_bottom_margin - int(slot_size.y) - 8)
 	root_center.offset_right = 0.0
-	root_center.offset_bottom = 0.0
+	root_center.offset_bottom = float(-bar_bottom_margin)
+	root_center.offset_top = float(-bar_bottom_margin - int(slot_size.y) - 16)
+	
 	root_center.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(root_center)
 
 	var bar_bg := PanelContainer.new()
 	bar_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var bg_style := StyleBoxFlat.new()
-	bg_style.bg_color = Color(0.15, 0.17, 0.19, 0.62)
-	bg_style.border_color = Color(0.9, 0.9, 0.92, 0.35)
-	bg_style.border_width_left = 2
-	bg_style.border_width_right = 2
-	bg_style.border_width_top = 2
-	bg_style.border_width_bottom = 2
-	bg_style.corner_radius_top_left = 0
-	bg_style.corner_radius_top_right = 0
-	bg_style.corner_radius_bottom_left = 0
-	bg_style.corner_radius_bottom_right = 0
-	bg_style.content_margin_left = 10
-	bg_style.content_margin_right = 10
-	bg_style.content_margin_top = 8
-	bg_style.content_margin_bottom = 8
+	bg_style.bg_color = Color(0.1, 0.1, 0.1, 0.6) # Color más oscuro y transparente estilo Minecraft
+	bg_style.border_color = Color(0.05, 0.05, 0.05, 0.8)
+	bg_style.border_width_left = 3
+	bg_style.border_width_right = 3
+	bg_style.border_width_top = 3
+	bg_style.border_width_bottom = 3
+	bg_style.corner_radius_top_left = 4
+	bg_style.corner_radius_top_right = 4
+	bg_style.corner_radius_bottom_left = 4
+	bg_style.corner_radius_bottom_right = 4
+	bg_style.content_margin_left = 12
+	bg_style.content_margin_right = 12
+	bg_style.content_margin_top = 10
+	bg_style.content_margin_bottom = 10
 	bar_bg.add_theme_stylebox_override("panel", bg_style)
 	root_center.add_child(bar_bg)
 
@@ -77,16 +96,16 @@ func _build_ui() -> void:
 		panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 		var style := StyleBoxFlat.new()
-		style.bg_color = Color(0.58, 0.58, 0.58, 0.95)
-		style.corner_radius_top_left = 0
-		style.corner_radius_top_right = 0
-		style.corner_radius_bottom_left = 0
-		style.corner_radius_bottom_right = 0
+		style.bg_color = Color(0.3, 0.3, 0.3, 0.6) # Cajas grises oscuras base
+		style.corner_radius_top_left = 2
+		style.corner_radius_top_right = 2
+		style.corner_radius_bottom_left = 2
+		style.corner_radius_bottom_right = 2
 		style.border_width_left = 2
 		style.border_width_right = 2
 		style.border_width_top = 2
 		style.border_width_bottom = 2
-		style.border_color = Color(0.25, 0.26, 0.27, 0.95)
+		style.border_color = Color(0.1, 0.1, 0.1, 0.9)
 		panel.add_theme_stylebox_override("panel", style)
 
 		var icon := TextureRect.new()
@@ -139,7 +158,35 @@ func _build_ui() -> void:
 		amount.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		panel.add_child(amount)
 
-		hbox.add_child(panel)
+		# Creamos el contenedor vertical (VBoxContainer) para agrupar el slot y el número debajo.
+		var slot_wrapper := VBoxContainer.new()
+		slot_wrapper.name = "SlotWrapper_" + str(i)
+		slot_wrapper.alignment = BoxContainer.ALIGNMENT_CENTER
+		slot_wrapper.add_theme_constant_override("separation", 6)
+		slot_wrapper.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		
+		# Movemos el panel dentro de slot_wrapper en lugar de meterlo directo en hbox
+		slot_wrapper.add_child(panel)
+
+		# Creamos el label del número para ponerlo DEBAJO del panel
+		var slot_number := Label.new()
+		slot_number.name = "SlotNumber"
+		slot_number.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		slot_number.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		slot_number.add_theme_font_size_override("font_size", 14)
+		slot_number.add_theme_color_override("font_color", Color(0.9, 0.9, 0.9, 0.8))
+		
+		# Agregamos sombra al texto para que resalte
+		slot_number.add_theme_color_override("font_shadow_color", Color(0.0, 0.0, 0.0, 0.8))
+		slot_number.add_theme_constant_override("shadow_offset_x", 1)
+		slot_number.add_theme_constant_override("shadow_offset_y", 1)
+		
+		slot_number.text = str(i + 1)
+		slot_number.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		slot_wrapper.add_child(slot_number)
+
+		# Finalmente agregamos el wrapper entero a la barra
+		hbox.add_child(slot_wrapper)
 		_slot_panels.append(panel)
 		_slot_icons.append(icon)
 		_slot_amounts.append(amount)
@@ -234,6 +281,8 @@ func _refresh_slots() -> void:
 func _short_item_label(item_id: String) -> String:
 	if item_id.is_empty():
 		return ""
+	if item_id == "linterna":
+		return ""
 	if item_id.length() <= 2:
 		return item_id.to_upper()
 	return item_id.substr(0, 2).to_upper()
@@ -258,20 +307,20 @@ func _apply_active_slot_visual(index: int, with_anim: bool) -> void:
 			continue
 
 		if i == _active_index:
-			style.bg_color = Color(0.62, 0.62, 0.62, 0.97)
-			style.border_color = Color(0.97, 0.97, 0.97, 1.0)
-			style.border_width_left = 4
-			style.border_width_right = 4
-			style.border_width_top = 4
-			style.border_width_bottom = 4
+			style.bg_color = Color(0.4, 0.4, 0.4, 0.8) # Bloque activo un poco más claro
+			style.border_color = Color(1.0, 1.0, 1.0, 1.0) # Borde blanco puro e iluminado
+			style.border_width_left = 3
+			style.border_width_right = 3
+			style.border_width_top = 3
+			style.border_width_bottom = 3
 			if with_anim:
 				panel.scale = Vector2(1.0, 1.0)
 				var tw := create_tween().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
-				tw.tween_property(panel, "scale", Vector2(1.04, 1.04), 0.05)
+				tw.tween_property(panel, "scale", Vector2(1.05, 1.05), 0.05)
 				tw.tween_property(panel, "scale", Vector2(1.0, 1.0), 0.06)
 		else:
-			style.bg_color = Color(0.58, 0.58, 0.58, 0.95)
-			style.border_color = Color(0.25, 0.26, 0.27, 0.95)
+			style.bg_color = Color(0.3, 0.3, 0.3, 0.6) # Cajas grises oscuras base
+			style.border_color = Color(0.1, 0.1, 0.1, 0.9)
 			style.border_width_left = 2
 			style.border_width_right = 2
 			style.border_width_top = 2
