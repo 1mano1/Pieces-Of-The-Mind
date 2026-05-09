@@ -1,4 +1,4 @@
-extends CharacterBody3D
+﻿extends CharacterBody3D
 
 signal cinematic_skip_requested
 signal health_changed(current_health: float, max_health: float)
@@ -63,6 +63,7 @@ func _ready() -> void:
 	_ensure_damage_ui()
 	_ensure_crosshair_plus_ui()
 	_ensure_flashlight()
+	_ensure_lupa_ui()
 	_setup_footsteps_audio()
 	emit_signal("health_changed", current_health, max_health)
 
@@ -229,7 +230,7 @@ func _setup_footsteps_audio() -> void:
 		footsteps_player.stream = stream
 		# Ajusta el volumen y aceleramos el audio un 30%
 		footsteps_player.volume_db = -5.0
-		footsteps_player.pitch_scale = 1.3 # Acelera el audio (1.0 es normal, 1.3 es más rápido)
+		footsteps_player.pitch_scale = 1.3 # Acelera el audio (1.0 es normal, 1.3 es mÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡s rÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡pido)
 		add_child(footsteps_player)
 
 	# Pasos Bosque
@@ -239,13 +240,13 @@ func _setup_footsteps_audio() -> void:
 		if stream_bosque is AudioStreamMP3:
 			stream_bosque.loop = true
 		footsteps_player_bosque.stream = stream_bosque
-		footsteps_player_bosque.volume_db = -3.0 # Ligeramente más alto si el audio de bosque suele ser suave
-		footsteps_player_bosque.pitch_scale = 1.3 # Acelerado 30% también
+		footsteps_player_bosque.volume_db = -3.0 # Ligeramente mÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡s alto si el audio de bosque suele ser suave
+		footsteps_player_bosque.pitch_scale = 1.3 # Acelerado 30% tambiÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â©n
 		add_child(footsteps_player_bosque)
 
-	# Sonido de daño
+	# Sonido de daÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â±o
 	damage_audio_player = AudioStreamPlayer.new()
-	var stream_damage = load("res://sonidos/daño a jugador.mp3")
+	var stream_damage = load("res://sonidos/daÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â±o a jugador.mp3")
 	if stream_damage:
 		# No hacemos loop porque es solo un impacto
 		damage_audio_player.stream = stream_damage
@@ -274,6 +275,105 @@ func toggle_flashlight() -> bool:
 	_flashlight.visible = _flashlight_on
 	emit_signal("flashlight_toggled", _flashlight_on)
 	return true
+
+var is_lupa_mode: bool = false
+var _lupa_ui_layer: Control = null
+var _lupa_post_process: ColorRect = null
+
+func _ensure_lupa_ui() -> void:
+	if canvas_layer == null:
+		return
+
+	var ui_root := canvas_layer.get_node_or_null("LupaUI") as Control
+	if ui_root == null:
+		ui_root = Control.new()
+		ui_root.name = "LupaUI"
+		ui_root.set_anchors_preset(Control.PRESET_FULL_RECT)
+		ui_root.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		ui_root.visible = false
+		canvas_layer.add_child(ui_root)
+
+		var tex_rect = TextureRect.new()
+		tex_rect.texture = load("res://Assets/Lupa/lupa_animacion.png")
+		tex_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		tex_rect.custom_minimum_size = Vector2(128, 128)
+		tex_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		tex_rect.set_anchors_preset(Control.PRESET_CENTER)
+		# Centrado manual ajustado
+		tex_rect.position = Vector2((1920 / 2) - 64, (1080 / 2) - 64)
+		tex_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		ui_root.add_child(tex_rect)
+
+		var lbl = Label.new()
+		lbl.text = "Presiona TAB para usar"
+		lbl.set_anchors_preset(Control.PRESET_BOTTOM_WIDE)
+		lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		lbl.add_theme_font_size_override("font_size", 32)
+		lbl.add_theme_color_override("font_color", Color(1, 1, 1, 1))
+		lbl.add_theme_color_override("font_outline_color", Color.BLACK)
+		lbl.add_theme_constant_override("outline_size", 4)
+		lbl.position = Vector2(0, -120)
+		ui_root.add_child(lbl)
+
+	_lupa_ui_layer = ui_root
+
+func _update_lupa_ui() -> void:
+	if _lupa_ui_layer == null:
+		return
+	var item_id: String = String(_selected_hotbar_slot.get("id", ""))
+	if item_id == "lupa" and not is_lupa_mode:
+		_lupa_ui_layer.visible = true
+	else:
+		_lupa_ui_layer.visible = false
+
+func toggle_lupa_mode() -> bool:
+	if is_dead:
+		return false
+	var slot: Dictionary = GameState.get_hotbar_slot(_selected_hotbar_index)
+	var item_id: String = String(slot.get("id", ""))
+	if item_id != "lupa":
+		return false
+
+	is_lupa_mode = not is_lupa_mode
+	emit_signal("lupa_mode_toggled", is_lupa_mode)
+
+	_update_lupa_ui()
+
+	if is_lupa_mode:
+		_activar_ambiente_lupa()
+	else:
+		_desactivar_ambiente_lupa()
+	return true
+
+func _activar_ambiente_lupa():
+	if canvas_layer == null:
+		return
+	
+	if _lupa_post_process == null:
+		_lupa_post_process = ColorRect.new()
+		_lupa_post_process.set_anchors_preset(Control.PRESET_FULL_RECT)
+		_lupa_post_process.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		
+		var mat = ShaderMaterial.new()
+		mat.shader = load("res://Shaders/vision_lupa.gdshader")
+		_lupa_post_process.material = mat
+		
+		canvas_layer.add_child(_lupa_post_process)
+		canvas_layer.move_child(_lupa_post_process, 0)
+	
+	_lupa_post_process.visible = true
+	
+	var cam = get_viewport().get_camera_3d()
+	if cam:
+		cam.cull_mask = cam.cull_mask | 2 # Add Layer 2 for hidden objects
+
+func _desactivar_ambiente_lupa():
+	if _lupa_post_process != null:
+		_lupa_post_process.visible = false
+	
+	var cam = get_viewport().get_camera_3d()
+	if cam:
+		cam.cull_mask = cam.cull_mask & ~2 # Remove Layer 2
 
 func is_flashlight_on() -> bool:
 	if _flashlight == null:
@@ -309,7 +409,7 @@ func take_damage(amount: float = 30.0) -> void:
 	_update_overlay_target_alpha()
 	emit_signal("health_changed", current_health, max_health)
 	
-	# Reproducir sonido de daño si estamos en el bosque
+	# Reproducir sonido de daÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â±o si estamos en el bosque
 	var curr_scene = get_tree().current_scene
 	if curr_scene != null and "bosque" in str(curr_scene.name).to_lower():
 		if damage_audio_player != null and not damage_audio_player.playing:
@@ -396,6 +496,7 @@ func on_hotbar_slot_changed(active_index: int, slot_data: Dictionary) -> void:
 	_selected_hotbar_index = active_index
 	_selected_hotbar_slot = slot_data.duplicate(true)
 	emit_signal("hotbar_slot_selected", _selected_hotbar_index, _selected_hotbar_slot)
+	_update_lupa_ui()
 
 func get_selected_hotbar_slot() -> Dictionary:
 	return _selected_hotbar_slot.duplicate(true)
@@ -508,15 +609,19 @@ func _esperar_avance_dialogo(auto_avance_segundos: float) -> void:
 	_dialogue_advance_requested = false
 
 func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("toggle_lupa") and not event.is_echo():
+		if toggle_lupa_mode():
+			get_viewport().set_input_as_handled()
+			return
+
 	if event.is_action_pressed("toggle_linterna") and not event.is_echo():
 		if toggle_flashlight():
 			get_viewport().set_input_as_handled()
 			return
 
-	if event.is_action_pressed("Interactuar") and not event.is_echo():
-		if use_selected_hotbar_item():
-			get_viewport().set_input_as_handled()
-			return
+	# Eliminada la activacion de item (linterna/pildora) con 'Interactuar' (E)
+	# para evitar conflictos con la interaccion de NPCs/Objetos.
+	# Si quieres usar objetos del inventario, usa las teclas numericas o F segun corresponda.
 
 	if event.is_action_pressed("ui_accept") and not event.is_echo():
 		if is_in_dialogue:
@@ -554,7 +659,7 @@ func _physics_process(delta: float) -> void:
 		velocity.x = direction.x * SPEED
 		velocity.z = direction.z * SPEED
 		
-		# Iniciar sonido si el jugador camina y está tocando el suelo
+		# Iniciar sonido si el jugador camina y estÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡ tocando el suelo
 		if is_on_floor():
 			var curr_scene = get_tree().current_scene
 			var is_intro_scene = (curr_scene != null and "node_3d" in str(curr_scene.scene_file_path).to_lower())

@@ -5,12 +5,12 @@ extends Node3D
 
 @export var spawn_desde_cocina: Vector3 = Vector3(0.0, 1.2, 0.0)
 @export_range(-180.0, 180.0, 1.0) var rotacion_spawn_desde_cocina_y_deg: float = 0.0
-@export_file("*.png", "*.webp", "*.jpg") var textura_cordura_path: String = "res://Assets/cordura.png"
+@export_file("*.png", "*.webp", "*.jpg") var textura_cordura_path: String = "res://Assets/barra_de_cordura.png"
 @export_range(120.0, 120.0, 1.0) var duracion_cordura_segundos: float = 120.0
 @export var mostrar_cordura_en_bosque: bool = true
 @export_range(48.0, 512.0, 1.0) var tamano_cordura_px: float = 170.0
 @export var hotbar_activa_en_bosque: bool = true
-@export var enemigo_activo_en_bosque: bool = true
+@export var enemigo_activo_en_bosque: bool = false
 @export_file("*.tscn", "*.glb", "*.gltf") var enemy_model_path: String = ""
 @export var enemy_spawn_offset_from_player: Vector3 = Vector3(12.0, 0.0, 12.0)
 @export_range(-180.0, 180.0, 1.0) var enemy_spawn_rot_y_deg: float = 0.0
@@ -43,6 +43,7 @@ var _cordura_icono_atlas: AtlasTexture = null
 var _cordura_inicio_msec: int = 0
 var _cordura_strip_region: Rect2 = Rect2(0.0, 0.0, 0.0, 0.0)
 var _cordura_frame_ancho: float = 0.0
+var _cordura_frame_alto: float = 0.0
 var _hotbar_bosque: Control = null
 var _enemy_controller: CharacterBody3D = null
 var _hotbar_retry_time: float = 0.0
@@ -51,7 +52,8 @@ var _world_environment: WorldEnvironment = null
 var _niebla_origen_xz: Vector2 = Vector2.ZERO
 var _niebla_densidad_actual: float = 0.0
 
-const CORDURA_FRAMES: int = 11
+const CORDURA_COLS: int = 5
+const CORDURA_ROWS: int = 4
 
 func _ready():
 	_limpiar_capas_cinematica()
@@ -64,6 +66,8 @@ func _ready():
 	call_deferred("_setup_hotbar_bosque")
 	call_deferred("_setup_enemy_spider")
 	call_deferred("_spawn_arboles")
+	call_deferred("_setup_npc_nina")
+	call_deferred("_verificar_regreso_de_mente")
 
 	_cordura_actual = 100.0
 	_hud_cordura_creado = false
@@ -510,69 +514,43 @@ func _crear_hud_cordura() -> void:
 		return
 
 	var root := canvas.get_node_or_null("HUDCordura") as Control
-	if root == null:
-		root = Control.new()
-		root.name = "HUDCordura"
-		root.anchor_left = 0.0
-		root.anchor_top = 0.0
-		root.anchor_right = 0.0
-		root.anchor_bottom = 0.0
-		canvas.add_child(root)
+	if root != null:
+		root.queue_free()
+	
+	root = Control.new()
+	root.name = "HUDCordura"
+	canvas.add_child(root)
 
-	root.offset_left = 22.0
-	root.offset_top = 18.0
-	root.offset_right = 22.0 + tamano_cordura_px
-	root.offset_bottom = 18.0 + tamano_cordura_px
+	root.set_anchors_preset(Control.PRESET_TOP_LEFT)
+	root.position = Vector2(22.0, 18.0)
+	root.size = Vector2(tamano_cordura_px, tamano_cordura_px)
 
 	_hud_cordura = root
 
-	var icono := root.get_node_or_null("IconoCordura") as TextureRect
-	if icono == null:
-		icono = TextureRect.new()
-		icono.name = "IconoCordura"
-		icono.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		icono.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		icono.anchor_left = 0.0
-		icono.anchor_top = 0.0
-		icono.anchor_right = 0.0
-		icono.anchor_bottom = 0.0
-		icono.offset_left = 0.0
-		icono.offset_top = 0.0
-		icono.offset_right = tamano_cordura_px
-		icono.offset_bottom = tamano_cordura_px
-		root.add_child(icono)
-	else:
-		icono.offset_right = tamano_cordura_px
-		icono.offset_bottom = tamano_cordura_px
+	var icono = TextureRect.new()
+	icono.name = "IconoCordura"
+	root.add_child(icono)
+	
+	icono.set_anchors_preset(Control.PRESET_TOP_LEFT)
+	icono.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	icono.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT
+	icono.position = Vector2.ZERO
+	icono.size = Vector2(tamano_cordura_px, tamano_cordura_px)
 	_cordura_icono = icono
 
-	var barra_existente := root.get_node_or_null("BarraCordura") as Control
-	if barra_existente != null:
-		barra_existente.queue_free()
-	var texto_existente := root.get_node_or_null("TextoCordura") as Control
-	if texto_existente != null:
-		texto_existente.queue_free()
-
-	var textura := load(textura_cordura_path) as Texture2D
+	var textura := load("res://Assets/barra_de_cordura.png") as Texture2D
 	if textura != null and _cordura_icono != null:
-		_cordura_strip_region = _detectar_region_util_textura(textura)
-		_cordura_frame_ancho = _cordura_strip_region.size.x / float(CORDURA_FRAMES)
-		if _cordura_frame_ancho <= 0.0 or _cordura_strip_region.size.y <= 0.0:
-			_cordura_strip_region = Rect2(0.0, 0.0, float(textura.get_width()), float(textura.get_height()))
-			_cordura_frame_ancho = _cordura_strip_region.size.x / float(CORDURA_FRAMES)
+		_cordura_strip_region = Rect2(0.0, 0.0, float(textura.get_width()), float(textura.get_height()))
+		_cordura_frame_ancho = _cordura_strip_region.size.x / float(CORDURA_COLS)
+		_cordura_frame_alto = _cordura_strip_region.size.y / float(CORDURA_ROWS)
 
 		var atlas := AtlasTexture.new()
 		atlas.atlas = textura
-		atlas.region = Rect2(
-			_cordura_strip_region.position.x + (_cordura_frame_ancho * 10.0),
-			_cordura_strip_region.position.y,
-			_cordura_frame_ancho,
-			_cordura_strip_region.size.y
-		)
+		atlas.region = Rect2(0, 0, _cordura_frame_ancho, _cordura_frame_alto)
 		_cordura_icono_atlas = atlas
 		_cordura_icono.texture = _cordura_icono_atlas
 	else:
-		push_warning("nivel_bosque: No se pudo cargar Assets/cordura.png para HUD de cordura.")
+		push_warning("nivel_bosque: No se pudo cargar Assets/barra_de_cordura.png para HUD de cordura.")
 
 	_cordura_inicio_msec = Time.get_ticks_msec()
 	_hud_cordura_creado = true
@@ -586,13 +564,18 @@ func _refrescar_hud_cordura() -> void:
 	porcentaje = clampi(porcentaje, 0, 100)
 
 	if _cordura_icono_atlas != null and _cordura_icono_atlas.atlas != null:
-		var indice := int(round((float(porcentaje) / 100.0) * 10.0))
-		indice = clampi(indice, 0, 10)
+		var total_frames := CORDURA_COLS * CORDURA_ROWS
+		var index := int(round((1.0 - (float(porcentaje) / 100.0)) * float(total_frames - 1)))
+		index = clampi(index, 0, total_frames - 1)
+		
+		var col := index % CORDURA_COLS
+		var row := index / CORDURA_COLS
+		
 		_cordura_icono_atlas.region = Rect2(
-			_cordura_strip_region.position.x + (_cordura_frame_ancho * float(indice)),
-			_cordura_strip_region.position.y,
+			_cordura_strip_region.position.x + (_cordura_frame_ancho * float(col)),
+			_cordura_strip_region.position.y + (_cordura_frame_alto * float(row)),
 			_cordura_frame_ancho,
-			_cordura_strip_region.size.y
+			_cordura_frame_alto
 		)
 
 func _detectar_region_util_textura(textura: Texture2D) -> Rect2:
@@ -737,3 +720,119 @@ func _aplicar_texturas_arbol(nodo: Node, mat_cache: Dictionary, t_mad, t_hoj, t_
 	# Recursividad para hijos
 	for child in nodo.get_children():
 		_aplicar_texturas_arbol(child, mat_cache, t_mad, t_hoj, t_ram, t_ram2, t_ram3)
+
+# ── NPC Niña ──
+var _npc_nina: Node3D = null
+
+func _setup_npc_nina() -> void:
+	## CORRECCIÓN: busca también por nombre alternativo "NpcNinaSpawn"
+	_npc_nina = get_node_or_null("NpcNina") as Node3D
+	if _npc_nina == null:
+		_npc_nina = get_node_or_null("NpcNinaSpawn") as Node3D
+	if _npc_nina != null and is_instance_valid(_npc_nina):
+		# Ya existe en escena: solo corregir su rotación por si acaso
+		_npc_nina.rotation = Vector3(0.0, _npc_nina.rotation.y, 0.0)
+		return
+
+	# Crear por código
+	var nina_scene := load("res://Escenas/npc_nina.tscn") as PackedScene
+	if nina_scene == null:
+		push_warning("nivel_bosque: No se pudo cargar npc_nina.tscn")
+		return
+
+	var nina := nina_scene.instantiate() as Node3D
+	nina.name = "NpcNinaSpawn"
+
+	# Asegurar acción de interacción correcta
+	if nina is Interactable:
+		nina.prompt_input = "Interactuar"
+
+	add_child(nina)
+
+	# ── Calcular posición base (frente al jugador al regresar) ──
+	var pos_referencia := spawn_desde_cocina
+	var rot_referencia := deg_to_rad(rotacion_spawn_desde_cocina_y_deg)
+	# Al regresar de la Mente, GameState tiene la posición guardada del jugador
+	if GameState.tiene_spawn_bosque:
+		pos_referencia = GameState.spawn_bosque_pos
+		rot_referencia = GameState.spawn_bosque_rot_y
+
+	var forward := Vector3(0.0, 0.0, -1.0).rotated(Vector3.UP, rot_referencia)
+	var pos_xz := pos_referencia + (forward * 3.5)
+
+	# ── CORRECCIÓN DE ALTURA: RayCast hacia abajo para encontrar suelo real ──
+	# Lanzar desde arriba hacia abajo para no quedar dentro del terreno
+	var ray_inicio := Vector3(pos_xz.x, pos_referencia.y + 10.0, pos_xz.z)
+	var ray_fin    := Vector3(pos_xz.x, pos_referencia.y - 10.0, pos_xz.z)
+	var query := PhysicsRayQueryParameters3D.create(ray_inicio, ray_fin)
+	query.exclude = [nina.get_rid()] if nina.get_class() == "StaticBody3D" else []
+	var espacio := get_world_3d().direct_space_state
+	var result  := espacio.intersect_ray(query)
+
+	var pos_final: Vector3
+	if result.size() > 0:
+		# Suelo encontrado: posicionar encima con offset mínimo
+		pos_final = result["position"]
+		pos_final.y += 0.05  # justo encima del suelo
+	else:
+		# Fallback: usar la Y del jugador (mejor que un offset fijo arbitrario)
+		pos_final = Vector3(pos_xz.x, pos_referencia.y, pos_xz.z)
+
+	nina.global_position = pos_final
+
+	# ── CORRECCIÓN DE ROTACIÓN: solo eje Y, sin inclinación ──
+	# Calcular el ángulo Y manualmente sin usar look_at (que puede inclinar X/Z)
+	var dir_a_jugador := pos_referencia - pos_final
+	dir_a_jugador.y = 0.0  # Ignorar diferencia de altura
+	if dir_a_jugador.length_squared() > 0.001:
+		var angulo_y := atan2(dir_a_jugador.x, dir_a_jugador.z)
+		nina.rotation = Vector3(0.0, angulo_y, 0.0)
+	else:
+		nina.rotation = Vector3.ZERO
+
+	_npc_nina = nina
+
+func _verificar_regreso_de_mente() -> void:
+	if not GameState.nina_objetos_entregados:
+		return
+	if _npc_nina == null:
+		return
+	# Diálogo de agradecimiento + pastilla
+	call_deferred("_dialogo_recompensa_nina")
+
+func _dialogo_recompensa_nina() -> void:
+	if jugador == null or _npc_nina == null:
+		return
+	var dist := jugador.global_position.distance_to(_npc_nina.global_position)
+	if dist > 8.0:
+		# Esperar a que se acerque
+		await get_tree().create_timer(1.0).timeout
+		call_deferred("_dialogo_recompensa_nina")
+		return
+	jugador.desactivar_control()
+	await _mostrar_dialogo_bosque("Nina: Lo lograste... gracias.", 3.0)
+	await _mostrar_dialogo_bosque("Nina: Toma, esto te ayudará.", 3.0)
+	# Dar pastilla
+	GameState.agregar_item_hotbar("pildora", 1, "res://Assets/pildora.png")
+	await _mostrar_dialogo_bosque("[ Recibiste una Píldora ]", 2.5)
+	_ocultar_dialogo_bosque()
+	jugador.activar_control()
+
+func _mostrar_dialogo_bosque(texto: String, dur: float) -> void:
+	var label := jugador.get_node_or_null("CanvasLayer/DialogoLabel") as Label
+	if label != null:
+		label.text = texto
+		label.visible = true
+		label.modulate.a = 1.0
+	await get_tree().create_timer(dur).timeout
+
+func _ocultar_dialogo_bosque() -> void:
+	var label := jugador.get_node_or_null("CanvasLayer/DialogoLabel") as Label
+	if label != null:
+		label.visible = false
+
+func _verificar_regreso_fallido() -> void:
+	# Si volvió del bosque habiendo aceptado pero sin completar = escapó o murió
+	if GameState.nina_hablado_antes and not GameState.nina_acepto_ayudar and not GameState.nina_objetos_entregados:
+		# El npc_nina al volver a hablar con ella mostrará el diálogo adecuado automáticamente
+		pass

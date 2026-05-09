@@ -168,3 +168,36 @@ func find_hotbar_item_slot(item_id: String) -> int:
 		if String(slot.get("id", "")) == item_id and int(slot.get("count", 0)) > 0:
 			return i
 	return -1
+
+# ── Estado de la niña (alma 1) ──
+var nina_hablado_antes: bool = false      # Ya hubo conversación previa
+var nina_acepto_ayudar: bool = false      # El jugador dijo Sí
+var nina_objetos_entregados: bool = false  # Completó la mente y entregó los 3 objetos
+
+# ── Objetos recogidos en la mente ──
+var mente_peluche_recogido: bool = false
+var mente_tijeras_recogidas: bool = false
+var mente_zapato_recogido: bool = false
+
+func reset_mente_objetos() -> void:
+	mente_peluche_recogido = false
+	mente_tijeras_recogidas = false
+	mente_zapato_recogido = false
+
+func mente_objetos_completos() -> bool:
+	return mente_peluche_recogido and mente_tijeras_recogidas and mente_zapato_recogido
+
+func agregar_item_hotbar(item_id: String, cantidad: int, icon_path: String = "") -> void:
+	_ensure_hotbar_initialized()
+	# Busca slot existente del mismo item
+	for i in range(hotbar_slots.size()):
+		var slot: Dictionary = hotbar_slots[i]
+		if String(slot.get("id", "")) == item_id:
+			set_hotbar_slot(i, item_id, int(slot.get("count", 0)) + cantidad, icon_path)
+			return
+	# Busca slot vacío
+	for i in range(hotbar_slots.size()):
+		var slot: Dictionary = hotbar_slots[i]
+		if String(slot.get("id", "")).is_empty() or int(slot.get("count", 0)) <= 0:
+			set_hotbar_slot(i, item_id, cantidad, icon_path)
+			return
